@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Webgl Memory Leak</title>
+  <link rel="shortcut icon" href="TemplateData/favicon.ico">
+  <link rel="stylesheet" href="TemplateData/style.css">
+</head>
+<body>
+  <script src="Build/Build.loader.js"></script>
+  <button type="button"  onclick="load();">Load Unity</button>
+  <div id="unity-collection" class="unity-collection"></div>
+
+  <script>
+      const buildUrl = "Build";
+      const loaderUrl = buildUrl + "/Build.loader.js";
+      const config = {
+        dataUrl: buildUrl + "/Build.data",
+        frameworkUrl: buildUrl + "/Build.framework.js",
+        codeUrl: buildUrl + "/Build.wasm",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "DefaultCompany",
+        productName: "Webgl Memory Leak",
+        productVersion: "0.1",
+      };
+	  
+    function load() {
+      var collection = document.querySelector("#unity-collection");
+
+      var container = document.createElement("div");
+      container.id = "unity-container";
+      container.className = "unity-desktop";
+      container.width = 256;
+      container.height = 256;
+      collection.appendChild(container);
+
+      var quitButton = document.createElement('button');
+      quitButton.innerHTML = "Quit!";
+      container.appendChild(quitButton);
+
+      var newCanvas = document.createElement("canvas");
+      newCanvas.width = 256;
+      newCanvas.height = 256;
+      newCanvas.id = "unity-canvas";
+      newCanvas.style.display = "block";
+      newCanvas.style.width = "256px";
+      container.appendChild(newCanvas);
+    
+      var loadingBar = document.createElement("div");
+      loadingBar.width = 256;
+      loadingBar.height = 256;
+      loadingBar.id = "unity-loading-bar";
+      loadingBar.style.display = "block";
+      container.appendChild(loadingBar);
+
+      var emptyBar = document.createElement("div");
+      emptyBar.id = "unity-progress-bar-empty";
+      loadingBar.appendChild(emptyBar);
+
+      var progressBarFull = document.createElement("div");
+      progressBarFull.id = "unity-progress-bar-full";
+      emptyBar.appendChild(progressBarFull);
+
+      createUnityInstance(newCanvas, config, (progress) => {
+        progressBarFull.style.width = 141 * progress + "px";
+      }).then((unityInstance) => {
+      //  console.log("Module", unityInstance.Module);
+        loadingBar.style.display = "none";
+        quitButton.onclick = function () {
+          unityInstance.SendMessage("Cube", "Kwit");
+          unityInstance.Quit().then(function () {
+            unityInstance = null;
+            container.remove();
+          });
+        }
+
+      }).catch((message) => {
+        alert(message);
+      });
+    }
+  </script>
+</body>
+
+
+
+</html>
