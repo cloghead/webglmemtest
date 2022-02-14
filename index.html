@@ -66,13 +66,14 @@
       createUnityInstance(newCanvas, config, (progress) => {
         progressBarFull.style.width = 141 * progress + "px";
       }).then((unityInstance) => {
-      //  console.log("Module", unityInstance.Module);
         loadingBar.style.display = "none";
         quitButton.onclick = function () {
-          unityInstance.SendMessage("Cube", "Kwit");
           unityInstance.Quit().then(function () {
             unityInstance = null;
-            container.remove();
+            collection.removeChild(container);
+            container = null;
+            newCanvas = null;
+            // container.remove();
           });
         }
 
@@ -82,7 +83,4 @@
     }
   </script>
 </body>
-
-
-
 </html>
